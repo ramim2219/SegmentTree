@@ -1,3 +1,4 @@
+//Problem Link: https://codeforces.com/edu/course/2/lesson/4/3/practice/contest/274545/problem/A
 #include<bits/stdc++.h>
 #define ll long long int
 #define endl '\n'
