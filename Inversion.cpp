@@ -16,7 +16,6 @@ void build(int ind, int low, int high, const vector<int>& arr) {
     int mid = (low + high) / 2;
     build(2 * ind + 1, low, mid, arr);
     build(2 * ind + 2, mid + 1, high, arr);
-    //seg[ind] = min(seg[2 * ind + 1], seg[2 * ind + 2]); // for finding minimum
     seg[ind] = seg[2 * ind + 1] + seg[2 * ind + 2]; // for finding summation
 }
 
@@ -24,7 +23,6 @@ void build(int ind, int low, int high, const vector<int>& arr) {
 int query(int ind, int low, int high, int l, int r) {
     // No overlap
     if (r < low | high < l) {
-        // return INT_MAX; // for finding minimum
         return 0; // for finding summation
     }
     // Complete overlap
@@ -33,7 +31,6 @@ int query(int ind, int low, int high, int l, int r) {
     int mid = (low + high) / 2;
     int left = query(2 * ind + 1, low, mid, l, r);
     int right = query(2 * ind + 2, mid + 1, high, l, r);
-    // return min(left, right); // for finding minimum
     return left + right; // for finding summation
 }
 
@@ -46,32 +43,40 @@ void update(int ind, int low, int high, int i, int val) {
     int mid = (low + high) >> 1;
     if (i <= mid) update(2 * ind + 1, low, mid, i, val);
     else update(2 * ind + 2, mid + 1, high, i, val);
-    // seg[ind] = min(seg[2 * ind + 1], seg[2 * ind + 2]); // for finding minimum
     seg[ind] = seg[2 * ind + 1] + seg[2 * ind + 2]; // for finding summation
 }
 
 int main() {
     fast;
     int n, q;
-    cin >> n >> q;
-    vector<int> arr(n);
-    for (int i = 0; i < n; i++) cin >> arr[i];
-
-    seg.resize(4 * n);
-    build(0, 0, n - 1, arr);
-
-    for (int i = 0; i < q; i++) {
-        int type, l, r;
-        cin >> type;
-        if (type == 1) {
-            cin >> l >> r;
-            cout << query(0, 0, n - 1, l, r) << endl;
-        } else if (type == 2) {
-            int pos, val;
-            cin >> pos >> val;
-            update(0, 0, n - 1, pos, val);
-            arr[pos] = val;
-        }
+    cin >> n ;
+    vector<int> arr(n),frq(n+5,0);
+    for (int i = 0; i < n; i++)
+    {
+        cin >> arr[i];
+        frq[arr[i]]++;
     }
+
+    seg.resize(4*n);
+    build(0, 0, n, frq);
+    stack<int>ans;
+    for(int i=n-1;i>=0;i--)
+    {
+        int l;
+        l=arr[i]+1;
+        int cnt=query(0,0,n,l,n);
+        ans.push(cnt);
+        update(0,0,n,arr[i],frq[arr[i]]-1);
+        frq[arr[i]]-=1;
+    }
+    while(!ans.empty())
+    {
+        cout<<ans.top()<<" ";
+        ans.pop();
+    }
+//    for (int i=1;i<=n ; i++)
+//        cout<<frq[i]<<endl;
+
     return 0;
 }
+
